@@ -200,8 +200,8 @@ typedef struct heap{
 
 /*----------VARIAVEIS GLOBAIS----------*/
 Heap H;
-int N_REFS = 2;
-Celula* refs[2];
+int N_REFS = 8;
+Celula* refs[8];
 /*-------------------------------------*/
 
 
@@ -338,22 +338,45 @@ int main( ){
     Celula *G=NULL;
 
     char entrada[100000];
-    readFileToString("../string_ks.txt", entrada);
+    readFileToString("../string_turner.txt", entrada);
     /*--------------------INICIALIZAÇÃO DAS REFERENCIAS----------*/
 
     /*--------------------INICIALIZACAO DO GRAFO E DA HEAP--------------------*/
     H.ind=0;            /*Inicializa o contador do heap.*/
     /*--------------------REGISTRO DOS OPERADORES--------------------*/
-    Celula* kref=alloc();
-    kref->esq=kref->dir=NULL;
-    kref->ch='K';
-
+    Celula* Sref=alloc();
+    Sref->esq=Sref->dir=NULL;
+    Sref->ch='S';
+    Celula* Kref=alloc();
+    Kref->esq=Kref->dir=NULL;
+    Kref->ch='K';
+    Celula* Iref=alloc();
+    Iref->esq=Iref->dir=NULL;
+    Iref->ch='I';
+    Celula* Bref=alloc();
+    Bref->esq=Bref->dir=NULL;
+    Bref->ch='B';
+    Celula* Cref=alloc();
+    Cref->esq=Cref->dir=NULL;
+    Cref->ch='C';
     Celula* sref=alloc();
     sref->esq=sref->dir=NULL;
-    sref->ch='S';
+    sref->ch='s';
+    Celula* bref=alloc();
+    bref->esq=bref->dir=NULL;
+    bref->ch='b';
+    Celula* cref=alloc();
+    cref->esq=cref->dir=NULL;
+    cref->ch='c';
 
-    refs[0] = kref;
-    refs[1] = sref;
+    refs[0] = Sref;
+    refs[1] = Kref;
+    refs[2] = Iref;
+    refs[3] = Bref;
+    refs[4] = Cref;
+    refs[5] = sref;
+    refs[6] = bref;
+    refs[7] = cref;
 
     /*-------------------REGISTRO DE TEMPO E INICIALIZAÇÃO--------------*/
     clock_t tempoInicio, tempoFim;

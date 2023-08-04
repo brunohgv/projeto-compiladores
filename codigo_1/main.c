@@ -326,7 +326,7 @@ int main( ){
     Celula *G=NULL;
 
     char entrada[100000];
-    readFileToString("../string_ks.txt", entrada);
+    readFileToString("../string_turner.txt", entrada);
     /*--------------------INICIALIZACAO DO GRAFO E DA HEAP--------------------*/
     H.ind=0;            /*Inicializa o contador do heap.*/
     clock_t tempoInicio, tempoFim;
