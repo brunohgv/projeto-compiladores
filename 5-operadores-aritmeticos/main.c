@@ -184,13 +184,17 @@
 })
 
 #define aplicarReducaoMaiorQue(A) ({\
-    (A->a > A->b)\
+    int a = A->a->ch - '0';\
+    int b = A->b->ch - '0';\
+    (a > b)\
     ? A->raiz->esq=buscarReferencia('T')\
     : A->raiz->esq=buscarReferencia('F');\
 })
 
 #define aplicarReducaoMenorQue(A) ({\
-    (A->a < A->b)\
+    int a = A->a->ch - '0';\
+    int b = A->b->ch - '0';\
+    (a < b)\
     ? A->raiz->esq=buscarReferencia('T')\
     : A->raiz->esq=buscarReferencia('F');\
 })
