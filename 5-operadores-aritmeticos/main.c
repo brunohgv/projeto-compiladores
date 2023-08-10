@@ -199,6 +199,14 @@
     : A->raiz->esq=buscarReferencia('F');\
 })
 
+#define aplicarReducaoIgual(A) ({\
+    int a = A->a->ch - '0';\
+    int b = A->b->ch - '0';\
+    (a == b)\
+    ? A->raiz->esq=buscarReferencia('T')\
+    : A->raiz->esq=buscarReferencia('F');\
+})
+
 typedef struct celula{
     char ch;
     struct celula *esq, *dir;
@@ -222,8 +230,8 @@ typedef struct heap{
 
 /*----------VARIAVEIS GLOBAIS----------*/
 Heap H;
-int N_REFS = 8;
-Celula* refs[12];
+int N_REFS = 13;
+Celula* refs[13];
 /*-------------------------------------*/
 
 
@@ -251,7 +259,7 @@ Celula* converterVetorGrafo(char* entrada, unsigned* i, unsigned tam, Celula* G)
 Celula* avaliarExpressao(Celula *G){
     Args *A=NULL;
     char reduziu;
-    unsigned chamadas, reducoesS, reducoesK, reducoesI, reducoesB, reducoesC, reducoesSl, reducoesBl, reducoesCl, reducoesT, reducoesF, reducoesMaiorQue, reducoesMenorQue;
+    unsigned chamadas, reducoesS, reducoesK, reducoesI, reducoesB, reducoesC, reducoesSl, reducoesBl, reducoesCl, reducoesT, reducoesF, reducoesMaiorQue, reducoesMenorQue, reducoesIgual;
 
     A=(Args*)calloc(1, sizeof(Args));
     if(A==NULL) {
@@ -259,7 +267,7 @@ Celula* avaliarExpressao(Celula *G){
         exit(1);
     }
     chamadas=0;
-    reducoesS=reducoesK=reducoesI=reducoesB=reducoesC=reducoesSl=reducoesBl=reducoesCl=reducoesT=reducoesF=reducoesMaiorQue=reducoesMenorQue=0;
+    reducoesS=reducoesK=reducoesI=reducoesB=reducoesC=reducoesSl=reducoesBl=reducoesCl=reducoesT=reducoesF=reducoesMaiorQue=reducoesMenorQue=reducoesIgual=0;
     do{
         A->numeroArgumentos=reduziu=0;
         A->operador=A->a=A->b=A->c=A->d=A->raiz=NULL;
@@ -374,6 +382,15 @@ Celula* avaliarExpressao(Celula *G){
                     reduziu=1;
                 }
                 break;
+            case '=':
+                A->numeroArgumentos=2;
+                localizarArgumentos(G, A);
+                if(A->b!=NULL){
+                    aplicarReducaoIgual(A);
+                    reducoesIgual++;
+                    reduziu=1;
+                }
+                break;
 
         }
     }while(reduziu==1);               /*Enquanto reducoes forem realizadas, continue a executar todo o laco.*/
@@ -439,6 +456,9 @@ int main( ){
     Celula* ltref=alloc();
     ltref->esq=ltref->dir=NULL;
     ltref->ch='<';
+    Celula* eqref=alloc();
+    eqref->esq=eqref->dir=NULL;
+    eqref->ch='=';
 
     refs[0] = Sref;
     refs[1] = Kref;
@@ -452,6 +472,7 @@ int main( ){
     refs[9] = Fref;
     refs[10] = mtref;
     refs[11] = ltref;
+    refs[12] = eqref;
 
     /*-------------------REGISTRO DE TEMPO E INICIALIZAÇÃO--------------*/
     clock_t tempoInicio, tempoFim;
