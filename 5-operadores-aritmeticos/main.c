@@ -51,6 +51,11 @@
 #define inserirElemento(G, e) ({\
     Celula *ne=NULL, *ng=G;\
     ne=buscarReferencia(e);\
+    if(ne==NULL) {\
+        ne=alloc( );\
+        ne->esq=ne->dir=NULL;\
+        ne->ch=e;\
+    }\
     if(G->esq==NULL) G->esq=ne;\
     else if (G->dir==NULL) G->dir=ne;\
     else{\
@@ -184,29 +189,74 @@
 })
 
 #define aplicarReducaoMaiorQue(A) ({\
-    int a = A->a->ch - '0';\
-    int b = A->b->ch - '0';\
-    (a > b)\
-    ? A->raiz->esq=buscarReferencia('T')\
-    : A->raiz->esq=buscarReferencia('F');\
+    int a=A->a->ch-'0';\
+    int b=A->b->ch-'0';\
+    if (a > b) {\
+        A->raiz->esq=buscarReferencia('T');\
+    } else {\
+        A->raiz->esq=buscarReferencia('F');\
+    }\
 })
 
 #define aplicarReducaoMenorQue(A) ({\
     int a = A->a->ch - '0';\
     int b = A->b->ch - '0';\
-    (a < b)\
-    ? A->raiz->esq=buscarReferencia('T')\
-    : A->raiz->esq=buscarReferencia('F');\
+    if (a < b) {\
+        A->raiz->esq=buscarReferencia('T');\
+    } else {\
+        A->raiz->esq=buscarReferencia('F');\
+    }\
 })
 
 #define aplicarReducaoIgual(A) ({\
     int a = A->a->ch - '0';\
     int b = A->b->ch - '0';\
-    (a == b)\
-    ? A->raiz->esq=buscarReferencia('T')\
-    : A->raiz->esq=buscarReferencia('F');\
+    if (a == b) {\
+        A->raiz->esq=buscarReferencia('T');\
+    } else {\
+        A->raiz->esq=buscarReferencia('F');\
+    }\
 })
 
+#define aplicarReducaoSoma(A) ({\
+    int a = A->a->ch - '0';\
+    int b = A->b->ch - '0';\
+    Celula *ns=NULL;\
+    ns=alloc();\
+    ns->esq=ns->dir=NULL;\
+    ns->ch= (a + b) + '0';\
+    A->raiz->esq=ns;\
+})
+
+#define aplicarReducaoSubtracao(A) ({\
+    int a = A->a->ch - '0';\
+    int b = A->b->ch - '0';\
+    Celula *ns=NULL;\
+    ns=alloc();\
+    ns->esq=ns->dir=NULL;\
+    ns->ch= (a - b) + '0';\
+    A->raiz->esq=ns;\
+})
+
+#define aplicarReducaoMultiplicacao(A) ({\
+    int a = A->a->ch - '0';\
+    int b = A->b->ch - '0';\
+    Celula *ns=NULL;\
+    ns=alloc();\
+    ns->esq=ns->dir=NULL;\
+    ns->ch= (a * b) + '0';\
+    A->raiz->esq=ns;\
+})
+
+#define aplicarReducaoDivisao(A) ({\
+    int a = A->a->ch - '0';\
+    int b = A->b->ch - '0';\
+    Celula *ns=NULL;\
+    ns=alloc();\
+    ns->esq=ns->dir=NULL;\
+    ns->ch= (a / b) + '0';\
+    A->raiz->esq=ns;\
+})
 typedef struct celula{
     char ch;
     struct celula *esq, *dir;
@@ -230,8 +280,8 @@ typedef struct heap{
 
 /*----------VARIAVEIS GLOBAIS----------*/
 Heap H;
-int N_REFS = 13;
-Celula* refs[13];
+int N_REFS = 17;
+Celula* refs[17];
 /*-------------------------------------*/
 
 
@@ -239,6 +289,7 @@ Celula* refs[13];
 Celula* converterVetorGrafo(char* entrada, unsigned* i, unsigned tam, Celula* G){
     Celula *Gn;
     while((*i)<tam){
+        printf("%c", entrada[*i]);
         if(entrada[*i]=='(') {
             (*i)++;
             Gn=converterVetorGrafo(entrada, i, tam, gerarRaiz( ));
@@ -259,7 +310,7 @@ Celula* converterVetorGrafo(char* entrada, unsigned* i, unsigned tam, Celula* G)
 Celula* avaliarExpressao(Celula *G){
     Args *A=NULL;
     char reduziu;
-    unsigned chamadas, reducoesS, reducoesK, reducoesI, reducoesB, reducoesC, reducoesSl, reducoesBl, reducoesCl, reducoesT, reducoesF, reducoesMaiorQue, reducoesMenorQue, reducoesIgual;
+    unsigned chamadas, reducoesS, reducoesK, reducoesI, reducoesB, reducoesC, reducoesSl, reducoesBl, reducoesCl, reducoesT, reducoesF, reducoesMaiorQue, reducoesMenorQue, reducoesIgual, reducoesSoma, reducoesSubtracao, reducoesMultiplicacao, reducoesDivisao;
 
     A=(Args*)calloc(1, sizeof(Args));
     if(A==NULL) {
@@ -267,7 +318,7 @@ Celula* avaliarExpressao(Celula *G){
         exit(1);
     }
     chamadas=0;
-    reducoesS=reducoesK=reducoesI=reducoesB=reducoesC=reducoesSl=reducoesBl=reducoesCl=reducoesT=reducoesF=reducoesMaiorQue=reducoesMenorQue=reducoesIgual=0;
+    reducoesS=reducoesK=reducoesI=reducoesB=reducoesC=reducoesSl=reducoesBl=reducoesCl=reducoesT=reducoesF=reducoesMaiorQue=reducoesMenorQue=reducoesIgual=reducoesSoma=reducoesSubtracao=reducoesMultiplicacao=reducoesDivisao=0;
     do{
         A->numeroArgumentos=reduziu=0;
         A->operador=A->a=A->b=A->c=A->d=A->raiz=NULL;
@@ -391,10 +442,46 @@ Celula* avaliarExpressao(Celula *G){
                     reduziu=1;
                 }
                 break;
+            case '+':
+                A->numeroArgumentos=2;
+                localizarArgumentos(G, A);
+                if(A->b!=NULL){
+                    aplicarReducaoSoma(A);
+                    reducoesSoma++;
+                    reduziu=1;
+                }
+                break;
+            case '-':
+                A->numeroArgumentos=2;
+                localizarArgumentos(G, A);
+                if(A->b!=NULL){
+                    aplicarReducaoSubtracao(A);
+                    reducoesSubtracao++;
+                    reduziu=1;
+                }
+                break;
+            case '*':
+                A->numeroArgumentos=2;
+                localizarArgumentos(G, A);
+                if(A->b!=NULL){
+                    aplicarReducaoMultiplicacao(A);
+                    reducoesMultiplicacao++;
+                    reduziu=1;
+                }
+                break;
+            case '/':
+                A->numeroArgumentos=2;
+                localizarArgumentos(G, A);
+                if(A->b!=NULL){
+                    aplicarReducaoDivisao(A);
+                    reducoesDivisao++;
+                    reduziu=1;
+                }
+                break;
 
         }
     }while(reduziu==1);               /*Enquanto reducoes forem realizadas, continue a executar todo o laco.*/
-    printf("ESTATISTICAS DE EXECUCAO NA MAQUINA ABSTRATA (MAQUINA DE REDUCAO DE GRAFOS):\n   -CHAMADAS AO AVALIADOR: %u.\n   -REDUCOES:\n\t   S:  %u\n\t   K:  %u\n\t   I:  %u\n\t   B:  %u\n\t   C:  %u\n\t   S': %u\n\t   B': %u\n\t   C': %u\n", chamadas, reducoesS, reducoesK, reducoesI, reducoesB, reducoesC, reducoesSl, reducoesBl, reducoesCl);
+    printf("ESTATISTICAS DE EXECUCAO NA MAQUINA ABSTRATA (MAQUINA DE REDUCAO DE GRAFOS):\n   -CHAMADAS AO AVALIADOR: %u.\n   -REDUCOES:\n\t   S:  %u\n\t   K:  %u\n\t   I:  %u\n\t   B:  %u\n\t   C:  %u\n\t   S': %u\n\t   B': %u\n\t   C': %u\n\t   T': %u\n\t   F': %u\n\t   >': %u\n\t   <': %u\n\t   =': %u\n\t   +': %u\n\t   -': %u\n\t   *': %u\n\t   /': %u\n", chamadas, reducoesS, reducoesK, reducoesI, reducoesB, reducoesC, reducoesSl, reducoesBl, reducoesCl, reducoesT, reducoesF, reducoesMaiorQue, reducoesMenorQue, reducoesIgual, reducoesSoma, reducoesSubtracao, reducoesMultiplicacao, reducoesDivisao);
     printf("   -NUMERO DE CELULAS CONSUMIDAS: %u\n", H.ind);
     free(A);
 }
@@ -413,8 +500,9 @@ int main( ){
     unsigned i=0;
     Celula *G=NULL;
 
-    char entrada[100000];
-    readFileToString("../string_turner.txt", entrada);
+    char entrada[100000] = "/63";
+    // char entrada[100000];
+    // readFileToString("../string_turner.txt", entrada);
     /*--------------------INICIALIZAÇÃO DAS REFERENCIAS----------*/
 
     /*--------------------INICIALIZACAO DO GRAFO E DA HEAP--------------------*/
@@ -459,6 +547,19 @@ int main( ){
     Celula* eqref=alloc();
     eqref->esq=eqref->dir=NULL;
     eqref->ch='=';
+    Celula* somaref=alloc();
+    somaref->esq=somaref->dir=NULL;
+    somaref->ch='+';
+    Celula* subtracaoref=alloc();
+    subtracaoref->esq=subtracaoref->dir=NULL;
+    subtracaoref->ch='-';
+    Celula* multiplicacaoref=alloc();
+    multiplicacaoref->esq=multiplicacaoref->dir=NULL;
+    multiplicacaoref->ch='*';
+    Celula* divisaoref=alloc();
+    divisaoref->esq=divisaoref->dir=NULL;
+    divisaoref->ch='/';
+
 
     refs[0] = Sref;
     refs[1] = Kref;
@@ -473,6 +574,10 @@ int main( ){
     refs[10] = mtref;
     refs[11] = ltref;
     refs[12] = eqref;
+    refs[13] = somaref;
+    refs[14] = subtracaoref;
+    refs[15] = multiplicacaoref;
+    refs[16] = divisaoref;
 
     /*-------------------REGISTRO DE TEMPO E INICIALIZAÇÃO--------------*/
     clock_t tempoInicio, tempoFim;
