@@ -318,6 +318,11 @@ Celula* converterVetorGrafo(char* entrada, unsigned* i, unsigned tam, Celula* G)
 }
 
 
+void imprimirGrafo(Celula* G){
+    if(G->esq!=NULL) imprimirGrafo(G->esq);
+    if(G->dir!=NULL) imprimirGrafo(G->dir);
+    printf("%c", G->ch);
+}
 
 Celula* avaliarExpressao(Celula *G){
     Args *A=NULL;
@@ -431,6 +436,12 @@ Celula* avaliarExpressao(Celula *G){
                 A->numeroArgumentos=2;
                 localizarArgumentos(G, A);
                 if(A->b!=NULL){
+                    avaliarExpressao(A->a);
+                    avaliarExpressao(A->b);
+                    if(A->a->ch == '@')
+                        A->a=A->a->esq;
+                    if(A->b->ch == '@')
+                        A->b=A->b->esq;
                     aplicarReducaoMaiorQue(A);
                     reducoesMaiorQue++;
                     reduziu=1;
@@ -440,6 +451,12 @@ Celula* avaliarExpressao(Celula *G){
                 A->numeroArgumentos=2;
                 localizarArgumentos(G, A);
                 if(A->b!=NULL){
+                    avaliarExpressao(A->a);
+                    avaliarExpressao(A->b);
+                    if(A->a->ch == '@')
+                        A->a=A->a->esq;
+                    if(A->b->ch == '@')
+                        A->b=A->b->esq;
                     aplicarReducaoMenorQue(A);
                     reducoesMenorQue++;
                     reduziu=1;
@@ -449,6 +466,12 @@ Celula* avaliarExpressao(Celula *G){
                 A->numeroArgumentos=2;
                 localizarArgumentos(G, A);
                 if(A->b!=NULL){
+                    avaliarExpressao(A->a);
+                    avaliarExpressao(A->b);
+                    if(A->a->ch == '@')
+                        A->a=A->a->esq;
+                    if(A->b->ch == '@')
+                        A->b=A->b->esq;
                     aplicarReducaoIgual(A);
                     reducoesIgual++;
                     reduziu=1;
@@ -458,6 +481,12 @@ Celula* avaliarExpressao(Celula *G){
                 A->numeroArgumentos=2;
                 localizarArgumentos(G, A);
                 if(A->b!=NULL){
+                    avaliarExpressao(A->a);
+                    avaliarExpressao(A->b);
+                    if(A->a->ch == '@')
+                        A->a=A->a->esq;
+                    if(A->b->ch == '@')
+                        A->b=A->b->esq;
                     aplicarReducaoSoma(A);
                     reducoesSoma++;
                     reduziu=1;
@@ -467,6 +496,12 @@ Celula* avaliarExpressao(Celula *G){
                 A->numeroArgumentos=2;
                 localizarArgumentos(G, A);
                 if(A->b!=NULL){
+                    avaliarExpressao(A->a);
+                    avaliarExpressao(A->b);
+                    if(A->a->ch == '@')
+                        A->a=A->a->esq;
+                    if(A->b->ch == '@')
+                        A->b=A->b->esq;
                     aplicarReducaoSubtracao(A);
                     reducoesSubtracao++;
                     reduziu=1;
@@ -476,6 +511,12 @@ Celula* avaliarExpressao(Celula *G){
                 A->numeroArgumentos=2;
                 localizarArgumentos(G, A);
                 if(A->b!=NULL){
+                    avaliarExpressao(A->a);
+                    avaliarExpressao(A->b);
+                    if(A->a->ch == '@')
+                        A->a=A->a->esq;
+                    if(A->b->ch == '@')
+                        A->b=A->b->esq;
                     aplicarReducaoMultiplicacao(A);
                     reducoesMultiplicacao++;
                     reduziu=1;
@@ -485,6 +526,12 @@ Celula* avaliarExpressao(Celula *G){
                 A->numeroArgumentos=2;
                 localizarArgumentos(G, A);
                 if(A->b!=NULL){
+                    avaliarExpressao(A->a);
+                    avaliarExpressao(A->b);
+                    if(A->a->ch == '@')
+                        A->a=A->a->esq;
+                    if(A->b->ch == '@')
+                        A->b=A->b->esq;
                     aplicarReducaoDivisao(A);
                     reducoesDivisao++;
                     reduziu=1;
@@ -494,6 +541,12 @@ Celula* avaliarExpressao(Celula *G){
                 A->numeroArgumentos=2;
                 localizarArgumentos(G, A);
                 if(A->b!=NULL){
+                    avaliarExpressao(A->a);
+                    avaliarExpressao(A->b);
+                    if(A->a->ch == '@')
+                        A->a=A->a->esq;
+                    if(A->b->ch == '@')
+                        A->b=A->b->esq;
                     aplicarReducaoPotencia(A);
                     reducoesPotencia++;
                     reduziu=1;
@@ -502,18 +555,14 @@ Celula* avaliarExpressao(Celula *G){
 
         }
     }while(reduziu==1);               /*Enquanto reducoes forem realizadas, continue a executar todo o laco.*/
-    printf("ESTATISTICAS DE EXECUCAO NA MAQUINA ABSTRATA (MAQUINA DE REDUCAO DE GRAFOS):\n   -CHAMADAS AO AVALIADOR: %u.\n   -REDUCOES:\n\t   S:  %u\n\t   K:  %u\n\t   I:  %u\n\t   B:  %u\n\t   C:  %u\n\t   S': %u\n\t   B': %u\n\t   C': %u\n\t   T': %u\n\t   F': %u\n\t   >': %u\n\t   <': %u\n\t   =': %u\n\t   +': %u\n\t   -': %u\n\t   *': %u\n\t   /': %u\n\t   ^': %u\n", chamadas, reducoesS, reducoesK, reducoesI, reducoesB, reducoesC, reducoesSl, reducoesBl, reducoesCl, reducoesT, reducoesF, reducoesMaiorQue, reducoesMenorQue, reducoesIgual, reducoesSoma, reducoesSubtracao, reducoesMultiplicacao, reducoesDivisao, reducoesPotencia);
-    printf("   -NUMERO DE CELULAS CONSUMIDAS: %u\n", H.ind);
+    // printf("ESTATISTICAS DE EXECUCAO NA MAQUINA ABSTRATA (MAQUINA DE REDUCAO DE GRAFOS):\n   -CHAMADAS AO AVALIADOR: %u.\n   -REDUCOES:\n\t   S:  %u\n\t   K:  %u\n\t   I:  %u\n\t   B:  %u\n\t   C:  %u\n\t   S': %u\n\t   B': %u\n\t   C': %u\n\t   T': %u\n\t   F': %u\n\t   >': %u\n\t   <': %u\n\t   =': %u\n\t   +': %u\n\t   -': %u\n\t   *': %u\n\t   /': %u\n\t   ^': %u\n", chamadas, reducoesS, reducoesK, reducoesI, reducoesB, reducoesC, reducoesSl, reducoesBl, reducoesCl, reducoesT, reducoesF, reducoesMaiorQue, reducoesMenorQue, reducoesIgual, reducoesSoma, reducoesSubtracao, reducoesMultiplicacao, reducoesDivisao, reducoesPotencia);
+    // printf("   -NUMERO DE CELULAS CONSUMIDAS: %u\n", H.ind);
     free(A);
+    return G;
 }
 
 
 
-void imprimirGrafo(Celula* G){
-    if(G->esq!=NULL) imprimirGrafo(G->esq);
-    if(G->dir!=NULL) imprimirGrafo(G->dir);
-    printf("%c", G->ch);
-}
 
 
 
@@ -521,6 +570,7 @@ int main( ){
     unsigned i=0;
     Celula *G=NULL;
 
+    // char entrada[100000] = "/(*3(-(+(K(+12)S)2)1))2";
     char entrada[100000];
     readFileToString("../string_turner.txt", entrada);
     /*--------------------INICIALIZAÇÃO DAS REFERENCIAS----------*/
